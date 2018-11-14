@@ -1,0 +1,20 @@
+演示示例1中
+由于使用迭代器，如果在迭代过程中进行修改操作就会抛出异常ConcurrentModificationException
+synchronized(this){
+            Iterator<String> iterator = list.iterator();
+            int cnt = 0;
+            while(iterator.hasNext()){
+                iterator.next();
+                iterator.remove();
+                cnt++;
+                try {
+                    TimeUnit.MILLISECONDS.sleep(10);
+                } catch (InterruptedException e) {
+                    e.printStackTrace();
+                }
+            }
+一旦程序运行到try进入休眠，迭代过程还未结束，另一个线程开始运行sync代码段，并对list进行remove，因此抛出此异常。
+
+目前解决方法：
+（1）将start()改为run();这个办法仅仅只是让多线程运行变为单线程运行使之不会出现此错误
+（2）将this改为list,sync锁将list锁起来，使得在一个线程对list的整个迭代过程其他线程都无法对list进行修改。
